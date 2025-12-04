@@ -36,7 +36,7 @@ class AppleController extends Controller
             'success' => true,
             'count' => 1,
             'message' => 'Сгенерировано яблоко',
-            'html' => $this->renderPartial('_apple_item', [
+            'html' => $this->renderPartial('_apple_visual', [
                 'apple' => $apple
             ])
         ];
@@ -120,5 +120,35 @@ class AppleController extends Controller
         } catch (\Exception $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
+    }
+
+    public function actionGetApple($id)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $apple = Apple::findOne($id);
+        
+        if (!$apple) {
+            return ['success' => false, 'message' => 'Яблоко не найдено'];
+        }
+        
+        // Проверяем, что яблоко принадлежит текущему пользователю
+        if ($apple->user_id != Yii::$app->user->id) {
+            return ['success' => false, 'message' => 'Доступ запрещен'];
+        }
+        
+        return [
+            'success' => true,
+            'apple' => [
+                'id' => $apple->id,
+                'color' => $apple->color,
+                'status' => $apple->status,
+                'created_at' => date('Y-m-d H:i', strtotime($apple->created_at)),
+                'fallen_at' => $apple->fallen_at ? date('Y-m-d H:i', strtotime($apple->fallen_at)) : null,
+                'eaten_percent' => $apple->eaten_percent,
+                'size' => $apple->size,
+                'remaining_percent' => $apple->getRemainingPercent(),
+            ]
+        ];
     }
 }

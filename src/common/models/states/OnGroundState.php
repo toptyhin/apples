@@ -9,7 +9,7 @@ use yii\base\UserException;
 class OnGroundState implements AppleStateInterface
 {
     private $apple;
-    private const ROTTING_HOURS = 0.005;
+    private const ROTTING_HOURS = 0.05;
 
     public function __construct(Apple $apple)
     {

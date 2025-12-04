@@ -1,0 +1,533 @@
+/* Общие стили */
+.apple-index {
+    padding: 20px;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #90EE90 100%);
+}
+
+.apple-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.apple-header h1 {
+    color: #2d5016;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.apple-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.apple-count-info {
+    font-size: 1.1em;
+    color: #2d5016;
+    font-weight: bold;
+}
+
+.message-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    max-width: 400px;
+}
+
+/* Контейнер яблони */
+.apple-tree-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 600px;
+}
+
+/* Зона дерева */
+.tree-zone {
+    position: relative;
+    height: 400px;
+    margin-bottom: 50px;
+    padding: 20px;
+}
+
+.tree-visual {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200px;
+    height: 350px;
+    z-index: 1;
+}
+
+.tree-trunk {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 200px;
+    background: linear-gradient(to right, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+    border-radius: 20px;
+    box-shadow: inset -5px 0 10px rgba(0,0,0,0.3);
+}
+
+.tree-branches {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 250px;
+}
+
+.branch {
+    position: absolute;
+    background: linear-gradient(to bottom, #228B22 0%, #32CD32 50%, #228B22 100%);
+    border-radius: 50px;
+    box-shadow: 0 0 20px rgba(34, 139, 34, 0.5);
+}
+
+.branch-1 {
+    width: 180px;
+    height: 30px;
+    top: 20px;
+    left: -90px;
+    transform: rotate(-25deg);
+}
+
+.branch-2 {
+    width: 200px;
+    height: 35px;
+    top: 80px;
+    left: -100px;
+    transform: rotate(15deg);
+}
+
+.branch-3 {
+    width: 160px;
+    height: 30px;
+    top: 140px;
+    left: -80px;
+    transform: rotate(-20deg);
+}
+
+.apples-on-tree {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.apples-on-tree .no-apples {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #666;
+    font-style: italic;
+}
+
+/* Зона земли */
+.ground-zone {
+    position: relative;
+    min-height: 200px;
+    padding: 20px;
+    background: linear-gradient(to bottom, #90EE90 0%, #8FBC8F 100%);
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+}
+
+.ground-visual {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: repeating-linear-gradient(
+        90deg,
+        #8FBC8F 0px,
+        #8FBC8F 10px,
+        #90EE90 10px,
+        #90EE90 20px
+    );
+    border-radius: 0 0 20px 20px;
+}
+
+.apples-on-ground {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    justify-content: flex-start;
+    min-height: 150px;
+    padding: 20px;
+    z-index: 1;
+}
+
+.apples-on-ground .no-apples {
+    width: 100%;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 40px;
+}
+
+/* Визуальное отображение яблок */
+.apple-visual {
+    position: relative;
+    width: var(--apple-size, 60px);
+    height: var(--apple-size, 60px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.apple-visual:hover {
+    transform: scale(1.2);
+    z-index: 20;
+    filter: brightness(1.2);
+}
+
+.apple-visual.on-tree {
+    position: absolute;
+    animation: appear 0.5s ease-out;
+}
+
+.apple-visual.on-ground {
+    position: relative;
+    animation: fall 0.5s ease-out;
+}
+
+.apple-visual.on-ground .apple-stem,
+.apple-visual.on-ground .apple-leaf {
+    display: none;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(-300px) rotate(0deg);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+/* Тело яблока */
+.apple-body {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    box-shadow: 
+        inset -5px -5px 10px rgba(0,0,0,0.2),
+        2px 2px 8px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Красное яблоко */
+.apple-visual.apple-red .apple-body {
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #dc143c 60%, #b91c1c);
+    background-color: #dc143c;
+}
+
+/* Зеленое яблоко */
+.apple-visual.apple-green .apple-body {
+    background: radial-gradient(circle at 30% 30%, #90ee90, #32cd32 60%, #228b22);
+    background-color: #32cd32;
+}
+
+/* Желтое яблоко */
+.apple-visual.apple-yellow .apple-body {
+    background: radial-gradient(circle at 30% 30%, #ffeb3b, #ffd700 60%, #ffa000);
+    background-color: #ffd700;
+}
+
+/* Блик на яблоке */
+.apple-highlight {
+    position: absolute;
+    top: 20%;
+    left: 25%;
+    width: 25%;
+    height: 25%;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    filter: blur(3px);
+}
+
+/* Черенок яблока */
+.apple-stem {
+    position: absolute;
+    top: -8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8%;
+    height: 12%;
+    background: linear-gradient(to right, #8b4513, #654321);
+    border-radius: 0 0 50% 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+/* Лист яблока */
+.apple-leaf {
+    position: absolute;
+    top: -5%;
+    left: 55%;
+    width: 20%;
+    height: 15%;
+    background: linear-gradient(135deg, #90ee90, #228b22);
+    border-radius: 0 100% 0 100%;
+    transform: rotate(-20deg);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.apple-leaf::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30%;
+    height: 30%;
+    background: #228b22;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Гнилые яблоки */
+.apple-visual.rotten .apple-body {
+    background: radial-gradient(circle at 30% 30%, #8b7355, #6b5d4d 60%, #4a3e2e);
+    background-color: #6b5d4d;
+    filter: grayscale(0.6) brightness(0.7);
+    box-shadow: 
+        inset -5px -5px 10px rgba(0,0,0,0.3),
+        2px 2px 8px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(0,0,0,0.2);
+}
+
+.apple-visual.rotten .apple-highlight {
+    opacity: 0.2;
+}
+
+.apple-visual.rotten {
+    opacity: 0.8;
+}
+
+.apple-visual.rotten:hover {
+    filter: brightness(1.1);
+}
+
+/* Частично съеденные яблоки */
+.apple-visual.partially-eaten {
+    position: relative;
+}
+
+.apple-eaten-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.apple-eaten-percent-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: calc(var(--apple-size, 60px) * 0.25);
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 
+        1px 1px 2px rgba(0, 0, 0, 0.8),
+        -1px -1px 2px rgba(0, 0, 0, 0.8),
+        1px -1px 2px rgba(0, 0, 0, 0.8),
+        -1px 1px 2px rgba(0, 0, 0, 0.8);
+    z-index: 15;
+    pointer-events: none;
+}
+
+/* Случайное позиционирование яблок на дереве */
+.apples-on-tree .apple-visual {
+    position: absolute;
+}
+
+.apples-on-tree .apple-visual:nth-child(1) {
+    top: 10%;
+    left: 20%;
+}
+
+.apples-on-tree .apple-visual:nth-child(2) {
+    top: 15%;
+    left: 60%;
+}
+
+.apples-on-tree .apple-visual:nth-child(3) {
+    top: 25%;
+    left: 35%;
+}
+
+.apples-on-tree .apple-visual:nth-child(4) {
+    top: 30%;
+    left: 75%;
+}
+
+.apples-on-tree .apple-visual:nth-child(5) {
+    top: 40%;
+    left: 15%;
+}
+
+.apples-on-tree .apple-visual:nth-child(6) {
+    top: 45%;
+    left: 55%;
+}
+
+.apples-on-tree .apple-visual:nth-child(7) {
+    top: 50%;
+    left: 80%;
+}
+
+.apples-on-tree .apple-visual:nth-child(8) {
+    top: 20%;
+    left: 45%;
+}
+
+.apples-on-tree .apple-visual:nth-child(9) {
+    top: 35%;
+    left: 50%;
+}
+
+.apples-on-tree .apple-visual:nth-child(10) {
+    top: 12%;
+    left: 40%;
+}
+
+.apples-on-tree .apple-visual:nth-child(n+11) {
+    top: calc(10% + var(--random-top, 0px));
+    left: calc(20% + var(--random-left, 0px));
+}
+
+/* Модальное окно */
+.apple-modal-content {
+    text-align: center;
+}
+
+.apple-modal-visual {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.apple-large {
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    position: relative;
+    filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.3));
+}
+
+.apple-large .apple-body {
+    width: 100%;
+    height: 100%;
+}
+
+.apple-large .apple-highlight {
+    top: 15%;
+    left: 20%;
+    width: 30%;
+    height: 30%;
+}
+
+.apple-large .apple-stem {
+    top: -10%;
+    width: 10%;
+    height: 15%;
+}
+
+.apple-large .apple-leaf {
+    top: -8%;
+    left: 58%;
+    width: 25%;
+    height: 20%;
+}
+
+.apple-modal-info {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.apple-modal-info ul {
+    margin: 0;
+    padding: 0;
+}
+
+.apple-modal-info li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.apple-modal-info li:last-child {
+    border-bottom: none;
+}
+
+.apple-modal-actions {
+    margin-top: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .apple-tree-container {
+        min-height: 400px;
+    }
+    
+    .tree-zone {
+        height: 300px;
+    }
+    
+    .tree-visual {
+        width: 150px;
+        height: 250px;
+    }
+    
+    .tree-trunk {
+        width: 30px;
+        height: 150px;
+    }
+    
+    .branch {
+        transform: scale(0.7);
+    }
+    
+    .apple-visual {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .apples-on-ground {
+        gap: 15px;
+    }
+}
+
