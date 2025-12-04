@@ -18,7 +18,7 @@ class OnTreeState implements AppleStateInterface
     public function fallToGround()
     {
         $this->apple->status = Apple::STATUS_ON_GROUND;
-        $this->apple->initializeState();
+        $this->apple->setState(new OnGroundState($this->apple));
     }
 
     public function eat($percent)

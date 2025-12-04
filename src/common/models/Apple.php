@@ -43,7 +43,8 @@ class Apple extends ActiveRecord
     {
         return [
             [['user_id', 'color', 'created_at', 'status'], 'required'],
-            [['user_id', 'status', 'eaten_percent'], 'integer'],
+            [['user_id', 'status'], 'integer'],
+            [['eaten_percent', 'size'], 'number'],
             [['created_at', 'fallen_at'], 'safe'],
             [['color'], 'string', 'max' => 50],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
@@ -100,5 +101,89 @@ class Apple extends ActiveRecord
         return $this->state;
     }
 
+    public function fallToGround()
+    {
+        $this->state->fallToGround();
+        $this->fallen_at = date('Y-m-d H:i:s', time());
+
+        if (!$this->save()) {
+            Yii::error('Ошибки валидации при падении яблока: ' . print_r($this->errors, true), __METHOD__);
+            return false;
+        }
+        return true;
+    }
+
+    public function eat($percent)
+    {
+        $this->state->eat($percent);
+        
+        // Если яблоко полностью съедено, удаляем его из БД
+        if ($this->isEaten()) {
+            if ($this->delete()) {
+                return true;
+            }
+            Yii::error('Не удалось удалить полностью съеденное яблоко', __METHOD__);
+            return false;
+        }
+        
+        // Иначе сохраняем изменения
+        if (!$this->save()) {
+            Yii::error('Ошибки валидации при поедании яблока: ' . print_r($this->errors, true), __METHOD__);
+            return false;
+        }
+        return true;
+    }
+
+    public function checkRotting()
+    {
+        $this->state->checkRotting();
+        if (!$this->save()) {
+            Yii::error('Ошибки валидации при проверке гниения: ' . print_r($this->errors, true), __METHOD__);
+            return false;
+        }
+        return true;
+    }
+
+    public function getRemainingPercent()
+    {
+        return 100 - $this->eaten_percent;
+    }
+
+    public function isEaten()
+    {
+        return $this->eaten_percent >= 100;
+    }
+
+    public function isOnTree()
+    {
+        return $this->status === self::STATUS_ON_TREE;
+    }
+
+    public function isOnGround()
+    {
+        return $this->status === self::STATUS_ON_GROUND;
+    }
+
+    public function isRotten()
+    {
+        return $this->status === self::STATUS_ROTTEN;
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isEaten()) {
+                return false; // Не сохраняем, если съедено
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+        $this->initializeState();
+    }    
 
 }

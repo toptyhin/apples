@@ -95,6 +95,74 @@ $('#generate-btn').click(function() {
     });
 });
 
+// Обработка кликов на кнопки яблок (делегирование событий)
+$(document).on('click', '.apple-fall-btn', function() {
+    const appleId = $(this).data('id');
+    const btn = $(this);
+    
+    btn.prop('disabled', true);
+    
+    $.ajax({
+        url: "/apple/fall?id="+appleId,
+        type: 'POST',
+        data: {
+            '_csrf': yii.getCsrfToken()
+        },
+        success: function(response) {
+            if (response.success) {
+                const card = $('#apple-' + appleId);
+                card.find('.apple-status').html('🍂 На земле');
+                card.find('.apple-fallen-at').html('<strong>Упало:</strong> ' + new Date(response.fallen_at).toLocaleString());
+                card.find('.apple-actions').html(response.html);
+                showMessage('success', response.message);
+            } else {
+                showMessage('danger', response.message);
+            }
+        },
+        complete: function() {
+            btn.prop('disabled', false);
+        }
+    });
+});
+
+$(document).on('submit', '.apple-eat-form', function(e) {
+    e.preventDefault();
+    const form = $(this);
+    const appleId = form.data('id');
+    const btn = form.find('button[type="submit"]');
+    
+    btn.prop('disabled', true);
+    
+    $.ajax({
+        url: form.attr('action'),
+        type: 'POST',
+        data: form.serialize(),
+        success: function(response) {
+            if (response.success) {
+                const card = $('#apple-' + appleId);
+                
+                if (response.removed) {
+                    card.fadeOut(500, function() {
+                        $(this).remove();
+                        const count = parseInt($('#apple-count').text()) - 1;
+                        $('#apple-count').text(count);
+                    });
+                } else {
+                    card.find('.apple-eaten-percent').html('<strong>Съедено:</strong> ' + response.eaten_percent + '%');
+                    card.find('.apple-size').html('<strong>Размер:</strong> ' + response.size.toFixed(2));
+                    card.find('.apple-progress').html(response.html);
+                }
+                
+                showMessage('success', response.message);
+            } else {
+                showMessage('danger', response.message);
+            }
+        },
+        complete: function() {
+            btn.prop('disabled', false);
+        }
+    });
+});
 
 JS
 ); ?>

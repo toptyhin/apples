@@ -30,7 +30,6 @@ class AppleController extends Controller
         $userId = Yii::$app->user->id;
         $apple = new Apple();
         $apple->user_id = $userId;
-        // var_dump($apple);
         $apple->save();
 
         return [
@@ -45,32 +44,81 @@ class AppleController extends Controller
 
     public function actionFall($id)
     {
-        // $this->appleService->fall($id);
-        // Yii::$app->session->setFlash('success', 'Яблоко упало!');
-        return $this->redirect('index');
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        Yii::warning("TEST LOG");
+        $apple = Apple::findOne($id);
+        
+        if (!$apple) {
+            return ['success' => false, 'message' => 'Яблоко не найдено'];
+        }
+        
+        try {
+            $apple->fallToGround();
+            return [
+                'success' => true,
+                'message' => 'Яблоко упало!',
+                'apple_id' => $apple->id,
+                'status' => $apple->status,
+                'fallen_at' => $apple->fallen_at,
+                'html' => $this->renderPartial('_apple_actions', ['apple' => $apple])
+            ];
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 
-    public function actionEat()
+    public function actionEat($id)
     {
-        // $id = Yii::$app->request->post('id');
-        // $percent = (int)Yii::$app->request->post('percent');
-
-        // if (!$id || !$percent) {
-        //     Yii::$app->session->setFlash('error', 'Неверные данные.');
-        //     return $this->redirect('index');
-        // }
-
-        // try {
-        //     $apple = $this->appleService->eat($id, $percent);
-        //     if ($apple) {
-        //         Yii::$app->session->setFlash('success', "Откушено {$percent}%. Размер: {$apple->getSize()}");
-        //     } else {
-        //         Yii::$app->session->setFlash('success', 'Яблоко полностью съедено!');
-        //     }
-        // } catch (\Exception $e) {
-        //     Yii::$app->session->setFlash('error', $e->getMessage());
-        // }
-
-        return $this->redirect('index');
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $apple = Apple::findOne($id);
+        $percent = Yii::$app->request->post('percent', 25);
+        
+        if (!$apple) {
+            return ['success' => false, 'message' => 'Яблоко не найдено'];
+        }
+        
+        try {
+            $appleId = $apple->id;
+            $beforePercent = $apple->eaten_percent;
+            
+            // Вызываем eat() - он сам удалит яблоко, если оно будет полностью съедено
+            $result = $apple->eat($percent);
+            
+            if (!$result) {
+                return ['success' => false, 'message' => 'Не удалось съесть яблоко'];
+            }
+            
+            // Проверяем, удалено ли яблоко (пытаемся найти его в БД)
+            $appleAfter = Apple::findOne($appleId);
+            
+            if (!$appleAfter) {
+                // Яблоко было удалено из БД
+                return [
+                    'success' => true,
+                    'message' => 'Яблоко полностью съедено и удалено!',
+                    'removed' => true,
+                    'apple_id' => $appleId
+                ];
+            }
+            
+            // Яблоко осталось, обновляем данные
+            $response = [
+                'success' => true,
+                'apple_id' => $appleAfter->id,
+                'eaten_percent' => $appleAfter->eaten_percent,
+                'size' => $appleAfter->size,
+                'remaining_percent' => $appleAfter->getRemainingPercent(),
+                'removed' => false
+            ];
+            
+            $response['message'] = "Откушено {$percent}% яблока. Осталось: {$response['remaining_percent']}%";
+            $response['html'] = $this->renderPartial('_apple_actions', ['apple' => $appleAfter]);
+            
+            return $response;
+            
+        } catch (\Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
     }
 }
