@@ -10,6 +10,32 @@ if [ -f /var/www/html/common/config/main-local.template.php ]; then
   echo "Done."
 fi
 
+# Проверяем, существует ли шаблон конфига для frontend
+if [ -f /var/www/html/frontend/config/main-local.template.php ]; then
+  # Копируем шаблон в финальный файл (без envsubst, так как нет переменных)
+  echo "Generating frontend main-local.php from template..."
+  cp /var/www/html/frontend/config/main-local.template.php /var/www/html/frontend/config/main-local.php
+  echo "Done."
+fi
+
+# Генерация cookieValidationKey для frontend, если он пустой
+if [ -f /var/www/html/frontend/config/main-local.php ]; then
+  echo "Generating cookie validation key for frontend..."
+  php -r "
+  \$file = '/var/www/html/frontend/config/main-local.php';
+  \$content = file_get_contents(\$file);
+  if (strpos(\$content, \"'cookieValidationKey' => ''\") !== false) {
+    \$length = 32;
+    \$bytes = openssl_random_pseudo_bytes(\$length);
+    \$key = strtr(substr(base64_encode(\$bytes), 0, \$length), '+/=', '_-.');
+    \$content = preg_replace('/((\"|\')cookieValidationKey(\"|\')\s*=>\s*)(\"\"|\'\'')/', \"\\\$1'\$key'\", \$content);
+    file_put_contents(\$file, \$content);
+    echo \"Cookie validation key generated for frontend.\n\";
+  } else {
+    echo \"Cookie validation key already set for frontend.\n\";
+  }
+  "
+fi
 
 echo "Waiting for database connection..."
 until php -r "
