@@ -6,18 +6,36 @@ namespace frontend\controllers;
 use common\models\Apple;
 use yii\web\Controller;
 use yii\web\Response;
+use yii\filters\AccessControl;
 use Yii;
 
 
 class AppleController extends Controller
 {
+
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'], 
+                    ],
+                ],
+            ],
+        ];
+    }
+
+
     public function actionIndex()
     {
         $userId = Yii::$app->user->id;
         // // Проверяем гниение для всех яблок
         $apples = Apple::find()->where(['user_id' => $userId])->all();
         foreach ($apples as $apple) {
-            // $apple->checkRotting();
+            $apple->checkRotting();
         }
         return $this->render('index', [
             'apples' => Apple::find()->where(['user_id' => $userId])->all(),

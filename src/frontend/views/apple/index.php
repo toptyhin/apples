@@ -41,15 +41,7 @@ foreach ($apples as $apple) {
     <div class="apple-tree-container">
         <!-- Зона дерева -->
         <div class="tree-zone" id="tree-zone">
-            <!-- <div class="tree-visual">
-                <div class="tree-trunk"></div>
-                <div class="tree-branches">
-                    <div class="branch branch-1"></div>
-                    <div class="branch branch-2"></div>
-                    <div class="branch branch-3"></div>
-                </div>
-            </div> -->
-            
+           
             <div class="apples-on-tree" id="apples-on-tree">
                 <?php if (empty($applesOnTree)): ?>
                     <div class="no-apples">Нет яблок на дереве</div>
